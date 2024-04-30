@@ -47,6 +47,7 @@ sudo yum -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin d
 sudo systemctl start docker
 docker version
 mkdir -p /etc/docker
+
 sudo tee /etc/docker/daemon.json <<-'EOF'
 {
   "registry-mirrors": ["https://1mvmtgbg.mirror.aliyuncs.com"]
@@ -83,9 +84,10 @@ stream {
       proxy_timeout 120s;
       proxy_pass k8s;
   }
-  
+
 }
 EOF
+
 systemctl start nginx
 systemctl enable nginx
 netstat -utnlp|grep 7443
