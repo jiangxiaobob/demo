@@ -50,6 +50,6 @@ else
 fi
 
 # 删除超过7天的备份文件
-find $nfs_dir -type d -mtime +7 -exec rm -rf {} \;
+find $nfs_dir -maxdepth 1 -type d ! -name xinhuoa -mtime +7 -exec rm -rf {} \;
 
 echo "执行结束"
