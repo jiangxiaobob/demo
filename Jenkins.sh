@@ -38,6 +38,10 @@ systemctl restart chronyd
 cp -r /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 chronyc tracking
 date
+#配置代理
+echo "export http_proxy=http://代理ip:端口/" >> ~/.bashrc
+echo "export https_proxy=https://代理ip:端口/" >> ~/.bashrc
+source ~/.bashrc
 #安装tab补全
 yum install -y bash-completion 
 source /usr/share/bash-completion/bash_completion
