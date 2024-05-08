@@ -1,6 +1,6 @@
 # shellcheck disable=SC2148
 # 配置网卡
-nmcli connection modify ens33 ipv4.method manual ipv4.addresses 192.168.50.40/24 ipv4.gateway 192.168.50.1 ipv4.dns 8.8.8.8 connection.autoconnect yes
+nmcli connection modify ens33 ipv4.method manual ipv4.addresses 192.168.50.43/24 ipv4.gateway 192.168.50.1 ipv4.dns 8.8.8.8 connection.autoconnect yes
 nmcli connection up ens33
 nmcli connection reload
 nmcli connection up ens33
@@ -121,7 +121,66 @@ docker run -d  --name jenkins -p 8080:8080 -p 50000:50000 -u root -v /opt/jenkin
 docker ps 
 docker logs jenkins
 
+#=====================================================================================================================================================================================================================================================
+#安装Harbor
+wget https://github.com/goharbor/harbor/releases/download/v2.10.2/harbor-offline-installer-v2.10.2.tgz
+tar -xzvf harbor-offline-installer-v2.10.2.tgz
+cd harbor/
+cp harbor.yml.tmpl harbor.yml
+#vim harbor.yml
+#hostname: 192.168.50.43 #访问地址
+#http.port: 5000 #访问端口
+#不用https就直接注释掉https部分
+#harbor_admin_password: Harbor12345 #admin密码
+#data_volume: /data #数据库目录
+./install.sh
 
+#安装docker-compose
+wget https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-linux-x86_64
+mv docker-compose-linux-x86_64  /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+docker-compose version
+docker-compose -f docker-compose.yml up -d
+
+#测试，编辑Docker 守护程序的配置文件
+#registry-mirrors 这个选项用于设置 Docker 镜像的拉取源镜像，可以加速 Docker 镜像的下载。
+#insecure-registries 这个选项允许 Docker 守护程序拉取、推送映像到或从指定的 (HTTP 或者 HTTPS 无效证书的) Docker 注册表，而不检查 SSL 证书。
+cat << EOF > /etc/docker/daemon.json
+{
+  "registry-mirrors": ["https://1mvmtgbg.mirror.aliyuncs.com"],
+  "insecure-registries" : ["192.168.50.43:5000"]
+}
+EOF
+systemctl restart docker 
+docker-compose down
+#./install.sh
+docker-compose up -d
+docker login 192.168.50.43:5000
+#编写dockerfile
+cat << EOF > dockerfile
+FROM python:2.7
+# 设置工作目录
+WORKDIR /app
+# 创建一个 hello.py 文件
+RUN echo 'print("Hello, World!")' > ./hello.py
+# 使用 Python 运行 hello.py 文件
+CMD ["python", "./hello.py"]
+EOF
+#打镜像
+docker build -t my-python-app .
+docker images | grep my-python-app
+docker ps
+#打标机
+docker tag my-python-app:latest  192.168.50.43:5000/test/my-python-app:1.1
+#登录管理员，有权限的
+docker login 192.168.50.43:5000
+#推送
+docker push 192.168.50.43:5000/test/my-python-app:1.1
+#删除本地镜像
+docker rmi 192.168.50.43:5000/test/my-python-app:1.1
+#再拉取回来
+docker pull 192.168.50.43:5000/test/my-python-app:1.1
+ 
 #=======================================================================================================================================================================================================================================================
 #k8s-master安装rancher
 helm repo add rancher-stable https://releases.rancher.com/server-charts/stable
