@@ -35,6 +35,18 @@ echo "set paste"|sudo tee ~/.vimrc
 swapoff -a
 sed -i 's/.*swap.*/# remove swap/' /etc/fstab
 
+#配置时间同步
+yum install chrony
+systemctl start chronyd
+systemctl enable chronyd
+#vim /etc/chrony.conf
+#server ntp1.aliyun.com iburst
+#server time1.aliyun.com iburst
+systemctl restart chronyd
+cp -r /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+chronyc tracking
+date
+
 # 使能NFS
 yum install -y nfs-utils rpcbind
 systemctl start nfs-server
