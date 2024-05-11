@@ -136,8 +136,7 @@ cp harbor.yml.tmpl harbor.yml
 ./install.sh
 
 #安装docker-compose
-wget https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-linux-x86_64
-mv docker-compose-linux-x86_64  /usr/local/bin/docker-compose
+wget https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-linux-x86_64 -O /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 docker-compose version
 docker-compose -f docker-compose.yml up -d
