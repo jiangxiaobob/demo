@@ -1,4 +1,5 @@
-#客户端安装
+#内网客户端安装
+cd ~
 wget https://github.com/fatedier/frp/releases/download/v0.58.0/frp_0.58.0_linux_amd64.tar.gz
 tar -xf frp_0.58.0_linux_amd64.tar.gz
 cd frp_0.58.0_linux_amd64/
@@ -49,7 +50,7 @@ systemctl start frpc
 systemctl status frpc
 ss -untlp|grep 7000
 
-#服务端安装
+#公网服务端安装
 wget https://github.com/fatedier/frp/releases/download/v0.58.0/frp_0.58.0_linux_amd64.tar.gz
 tar -xf frp_0.58.0_linux_amd64.tar.gz
 cd frp_0.58.0_linux_amd64/
