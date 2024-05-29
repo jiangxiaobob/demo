@@ -310,3 +310,57 @@ wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v${IN
 kubectl apply -f ingress_nginx.yaml
 watch kubectl get pods -n ingress-nginx -o wide
 
+
+#=======================================================================================================================================================================================================================================================
+#k8s-master安装rancher
+helm repo add rancher-stable https://releases.rancher.com/server-charts/stable
+#helm repo remove  rancher-stable
+helm repo update
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.14.5/cert-manager.crds.yaml
+#kubectl delete -f https://github.com/cert-manager/cert-manager/releases/download/v1.14.5/cert-manager.crds.yaml
+#
+#准备仓库
+helm repo add jetstack https://charts.jetstack.io
+#helm repo remove jetstack
+helm repo update
+kubectl create namespace cattle-system
+#kubectl delete namespace cattle-system
+#如果已创建过 cattle-system 可能没有被完全清理，会出现 Rancher 的验证网关错误，清理后重新创建即可
+#kubectl get ValidatingWebhookConfiguration
+#kubectl delete ValidatingWebhookConfiguration rancher.cattle.io
+#kubectl delete ValidatingWebhookConfiguration validating-webhook-configuration
+#kubectl get MutatingWebhookConfiguration
+#kubectl delete MutatingWebhookConfiguration rancher.cattle.io
+#kubectl create namespace cattle-system
+helm install cert-manager jetstack/cert-manager \
+--namespace cert-manager \
+--create-namespace \
+--version v1.14.5
+#超时报错的话就删除重新安装
+#helm uninstall cert-manager --namespace cert-manager
+#helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.14.5
+
+kubectl get pods -n cert-manager
+kubectl get all -n cert-manager
+helm repo list
+#hostname自定义，ingress.extraAnnotations.kubernetes.io/ingress.class指定代理访问
+helm install rancher rancher-stable/rancher \
+--namespace cattle-system \
+--set hostname=www.kuberancherx.cn \
+--set bootstrapPassword=admin \
+--set ingress.tls.source=rancher \
+--set ingress.extraAnnotations.'kubernetes\.io/ingress\.class'=nginx
+#helm uninstall rancher -n cattle-system
+
+#检查
+kubectl get nodes
+kubectl get pods -n ingress-nginx
+kubectl get pods -n cert-manager
+kubectl get services -n ingress-nginx
+kubectl get services -n cert-manager
+kubectl get pods -n cattle-system
+helm list -n cattle-system
+kubectl get ingress -n cattle-system
+kubectl describe ingress rancher -n cattle-system
+kubectl exec -it ingress-nginx-controller-x9kbb  -n ingress-nginx  -- /bin/bash
+
