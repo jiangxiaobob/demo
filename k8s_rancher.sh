@@ -278,6 +278,23 @@ kubectl get pods -n kube-system
 calicoctl get nodes --allow-version-mismatch
 kubectl get pods -n calico-system
 
+# 部署metrics-server
+wget https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.7.1/components.yaml
+#vim components.yaml
+#spec:
+#      containers:
+#      - args:
+#        - --cert-dir=/tmp
+#        - --secure-port=10250
+#        - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+#        - --kubelet-use-node-status-port
+#        - --metric-resolution=15s
+#        - --kubelet-insecure-tls    #添加
+#        image: k8s.mirror.nju.edu.cn/metrics-server/metrics-server:v0.7.1  #修改
+kubectl apply -f components.yaml
+kubectl top node
+kubectl get pod -n kube-system | grep metrics-server
+
 # 安装helm
 curl -o /opt/helm-v${HELM_VERSION}-linux-amd64.tar.gz https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz
 cd /opt
