@@ -1,5 +1,3 @@
-# https://wiki.zhoumx.net/project-3/doc-99/
-
 HOSTNAME=master
 hostnamectl set-hostname $HOSTNAME
 
@@ -30,7 +28,9 @@ systemctl disable iptables && systemctl stop iptables
 # 取消vim自动添加注释
 touch ~/.vimrc
 echo "set paste"|sudo tee ~/.vimrc
-
+# 关闭selinux
+setenforce 0
+sed -i "s/SELINUX=enforcing/SELINUX=disabled/g" /etc/selinux/config
 # 关闭交换分区
 swapoff -a
 sed -i 's/.*swap.*/# remove swap/' /etc/fstab
@@ -53,10 +53,6 @@ systemctl start nfs-server
 systemctl start rpcbind
 systemctl enable nfs-server
 systemctl enable rpcbind
-
-# 关闭selinux
-setenforce 0
-sed -i "s/SELINUX=enforcing/SELINUX=disabled/g" /etc/selinux/config
 
 # 限制NetworkManager管理calico生成的网卡
 cat <<EOF >/etc/NetworkManager/conf.d/calico.conf
@@ -89,13 +85,11 @@ EOF
 modprobe overlay
 modprobe br_netfilter
 
-
 #查看是否加载        
 lsmod | grep    br_netfilter    
 
 #加载网桥过滤及内核转发配置文件
 sysctl -p /etc/sysctl.d/k8s.conf
-
 
 dnf install -y ipset ipvsadm
 cat > /etc/sysconfig/modules/ipvs.modules <<EOF
@@ -169,7 +163,6 @@ crictl pull registry.aliyuncs.com/google_containers/etcd:3.5.9-0
 crictl pull registry.aliyuncs.com/google_containers/coredns/coredns:v1.10.1
 #上面最后这个不行就用这个crictl pull registry.aliyuncs.com/google_containers/coredns:v1.10.1
 
-
 # 安装k8s api LB
 yum install -y nginx nginx-mod-stream
 cat <<EOF >/etc/nginx/nginx.conf
@@ -205,7 +198,6 @@ EOF
 systemctl start nginx
 systemctl enable nginx
 netstat -utnlp|grep 7443
-
 
 # 在master使用kubeadm init命令初始化
 kubeadm init --kubernetes-version=v${K8S_VERSION} \
@@ -245,11 +237,9 @@ kubeadm init --kubernetes-version=v${K8S_VERSION} \
 #kubeadm join api.k8s.com:7443 --token pe9nyt.8gzolcvpnwmygoke \
 #	--discovery-token-ca-cert-hash sha256:20204a06b30b937665e4689ca864dfd9c46ccf80896b411c77d26bae298c26f6 
 
-
 # 打上work节点标记，可选
 kubectl label node node1 node-role.kubernetes.io/worker=worker
 kubectl label node node2 node-role.kubernetes.io/worker=worker
-
 
 # 安装calico网络插件
 kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v${CALICOCTL_VERSION}/manifests/tigera-operator.yaml
@@ -277,7 +267,6 @@ kubectl -n kube-system edit cm kube-proxy
 #kubectl -n kube-system delete pod kube-proxy-fpv6m
 # 验证ipvs规则
 ipvsadm -Ln
-
 
 # 删除控制平面上的污点，没有污点则忽略
 kubectl taint nodes --all node-role.kubernetes.io/control-plane-
@@ -311,14 +300,14 @@ kubectl apply -f ingress_nginx.yaml
 watch kubectl get pods -n ingress-nginx -o wide
 
 
-#=======================================================================================================================================================================================================================================================
+#=============================================================================rancher======================================================================================
 #k8s-master安装rancher
 helm repo add rancher-stable https://releases.rancher.com/server-charts/stable
 #helm repo remove  rancher-stable
 helm repo update
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.14.5/cert-manager.crds.yaml
 #kubectl delete -f https://github.com/cert-manager/cert-manager/releases/download/v1.14.5/cert-manager.crds.yaml
-#
+
 #准备仓库
 helm repo add jetstack https://charts.jetstack.io
 #helm repo remove jetstack
@@ -363,4 +352,3 @@ helm list -n cattle-system
 kubectl get ingress -n cattle-system
 kubectl describe ingress rancher -n cattle-system
 kubectl exec -it ingress-nginx-controller-x9kbb  -n ingress-nginx  -- /bin/bash
-
