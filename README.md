@@ -26,7 +26,7 @@
          - ES_JAVA_OPTS=-Xms4096m -Xmx4096m
          #- xpack.security.enabled=true
          - xpack.security.enrollment.enabled=true
-         - ELASTIC_PASSWORD=jht1688
+         - ELASTIC_PASSWORD=passwd
        volumes:
          - ./es/data:/usr/share/elasticsearch/data:rw
          - ./es/logs:/usr/share/elasticsearch/logs:rw
@@ -178,7 +178,7 @@
    #执行后可能会报错:ERROR: Failed to determine the health of the cluster.等待一分钟再尝试
    ```
 
-8. 验证https访问es：浏览器访问验证，提示用户密码即是上一步操作的elastic、jht1688
+8. 验证https访问es：浏览器访问验证，提示用户密码即是上一步操作的elastic、passwd
 
 9. 复制CA证书到Kibana配置目录：
    第5步生成的压缩包内kibana文件夹下elasticsearch-ca.pem到kibana的配置文件夹内
@@ -228,7 +228,7 @@
     elasticsearch.ssl.certificateAuthorities: ["/usr/share/kibana/config/elasticsearch-ca.pem"]
     #elasticsearch.ssl.verificationMode: "certificate"  
     elasticsearch.username: "kibana_system"
-    elasticsearch.password: "jht1688"
+    elasticsearch.password: "passwd"
     
     server.ssl.enabled: true
     server.ssl.certificate: "/usr/share/kibana/config/kibana-server.crt"
@@ -302,7 +302,7 @@
    
    xpack.monitoring.enabled: true
    xpack.monitoring.elasticsearch.username: logstash_system
-   xpack.monitoring.elasticsearch.password: jht1688
+   xpack.monitoring.elasticsearch.password: passwd
    
    #这里必须用 https 
    xpack.monitoring.elasticsearch.hosts: [ "https://elasticsearch:9200" ]
@@ -340,7 +340,7 @@
          hosts => ["https://elasticsearch:9200"]
          index => "demo-%{+YYYY.MM.dd}"
          user => "elastic"
-         password => "jht1688"
+         password => "passwd"
          ssl_enabled => true
          ssl_certificate_authorities => ["/usr/share/logstash/config/logstash.pem"]
      }
@@ -357,8 +357,8 @@
 7. 检测elk连通性
 
    ```shell
-   #docker exec -it logstash curl --cacert /usr/share/logstash/config/logstash.pem -u elastic:jht1688 https://172.20.0.2:9200
-   #docker exec -it kibana curl --cacert /usr/share/kibana/config/elasticsearch-ca.pem -u elastic:jht1688 https://172.20.0.2:9200
+   #docker exec -it logstash curl --cacert /usr/share/logstash/config/logstash.pem -u elastic:passwd https://172.20.0.2:9200
+   #docker exec -it kibana curl --cacert /usr/share/kibana/config/elasticsearch-ca.pem -u elastic:passwd https://172.20.0.2:9200
    ```
 
 ### 配置filebeat
@@ -415,7 +415,7 @@
      hosts: ["https://172.20.0.2:9200"]
      index: "ms-appx-%{+yyyy.MM.dd}"
      username: "elastic"
-     password: "jht1688"
+     password: "passwd"
      ssl:
        certificate_authorities: ["/usr/share/filebeat/config/elasticsearch-ca.pem"]
        verification_mode: "none"
@@ -432,7 +432,7 @@
 4. 检测filebeat与es连通性
 
    ```shell
-   #docker exec -it filebeat curl --cacert /usr/share/filebeat/config/elasticsearch-ca.pem -u elastic:jht1688 https://172.20.0.2:9200
+   #docker exec -it filebeat curl --cacert /usr/share/filebeat/config/elasticsearch-ca.pem -u elastic:passwd https://172.20.0.2:9200
    ```
 
    
