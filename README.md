@@ -393,11 +393,11 @@
 
    ```
    filebeat.inputs:
-# - type: docker
-#  containers:
-#    path: "/var/lib/docker/containers"      #docker容器日志的路径，可写可不写
-#    ids:
-#      - "*"    #收集所有容器日志，单个就写单个id
+   # - type: docker
+   #  containers:
+   #    path: "/var/lib/docker/containers"      #docker容器日志的路径，可写可不写
+   #    ids:
+   #      - "*"    #收集所有容器日志，单个就写单个id
    - type: log
      enabled: true
      paths:
