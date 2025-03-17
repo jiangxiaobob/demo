@@ -79,6 +79,7 @@
    
    networks:
      elk:
+       name: elk
        driver: bridge
    ```
 
