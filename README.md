@@ -386,6 +386,11 @@
        networks:
          - elk
    
+       ulimits:
+         nofile:
+           soft: 65536  #软 (建议) 限制句柄，-1为不限制
+           hard: 65536  #硬 (强硬) 限制句柄，-1为不限制
+   
    networks:
        elk:
          external: true
