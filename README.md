@@ -375,11 +375,14 @@
        container_name: filebeat
        restart: no
        volumes:
-         - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
+         - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
          - ./config:/usr/share/filebeat/config
-         - ./data:/usr/share/filebeat/data
+         - ./data:/usr/share/filebeat/data:rw
          - ./logs:/usr/share/filebeat/logs
+         - /var/lib/docker/containers:/var/lib/docker/containers:ro
+         - /var/run/docker.sock:/var/run/docker.sock:ro
          - /app/logs:/app/logs
+   
        networks:
          - elk
    
