@@ -364,7 +364,7 @@
 
 ### 配置filebeat
 
-1. 创建工作目录
+1. 创建工作目录&编排filebeat
 
    ```shell
    #mkdir -p filebeat/{config,data,logs} && cd filebeat
