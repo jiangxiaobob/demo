@@ -16,10 +16,6 @@ other_pattern="kibana|filebeat"
 get_container_list() {
     docker ps -a --filter "name=($frontend_pattern|$other_pattern)" --format "{{.Names}}" 2>/dev/null
 }
-#get_container_list() {
-#    local pattern=$1
-#    docker ps -a --filter "name=${pattern}" --format "{{.Names}}" 2>/dev/null
-#}
 
 # 重启函数
 graceful_restart() {
