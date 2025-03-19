@@ -394,16 +394,20 @@
 
    ```
    filebeat.inputs:
-   # - type: docker
-   #  containers:
-   #    path: "/var/lib/docker/containers"      #docker容器日志的路径，可写可不写
-   #    ids:
-   #      - "*"    #收集所有容器日志，单个就写单个id
+   - type: container
+     enabled: true
+     paths: "/var/lib/docker/containers/123xxxx123xxx-json.log"      #docker容器日志的路径，可写可不写
+     ids:
+       - "*"    #收集所有容器日志，单个就写单个id
+     fields:
+       source_type: "docker_container"
+   
    - type: log
      enabled: true
      paths:
        - /app/logs/*/*.log 
-     fields: 
+     fields:
+       source_type: "app_log"
        project: ms
        app: appx
    
@@ -420,6 +424,7 @@
      ssl:
        certificate_authorities: ["/usr/share/filebeat/config/elasticsearch-ca.pem"]
        verification_mode: "none"
+   max_procs: 1 #限制filebeat只使用一个 CPU 核心来处理事件或日志
    ```
 
 3. 配置ca证书连接
