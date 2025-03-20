@@ -1,9 +1,31 @@
 #===============================================CentOS初始化================================================
 # 配置网卡
 nmcli connection modify ens33 ipv4.method manual ipv4.addresses 192.168.50.43/24 ipv4.gateway 192.168.50.1 ipv4.dns 8.8.8.8 connection.autoconnect yes
-nmcli connection up ens33
-nmcli connection reload
-nmcli connection up ens33
+nmcli connection up ens33 && nmcli connection reload && nmcli connection up ens33
+#或者用nimatui或者直接修改配置文件
+tee /etc/sysconfig/network-scripts/ifcfg-ens33  <<'EOF'
+TYPE=Ethernet
+PROXY_METHOD=none
+BROWSER_ONLY=no
+DEFROUTE=yes
+IPV4_FAILURE_FATAL=no
+IPV6INIT=yes
+IPV6_AUTOCONF=yes
+IPV6_DEFROUTE=yes
+IPV6_FAILURE_FATAL=no
+IPV6_ADDR_GEN_MODE=eui64
+NAME=ens33
+UUID=37ee78f5-f959-478e-b7cf-bff140a2e7d1
+DEVICE=ens160
+ONBOOT=yes
+PREFIX=24
+BOOTPROTO=static #或者直接删除
+IPADDR=192.168.177.111
+GATEWAY=192.168.177.2
+DNS1=114.114.114.114
+EOF
+#检查
+nmcli connection reload && nmcli connection up ens33
 more /etc/resolv.conf
 route -n
 ping -c 4 www.baidu.com
@@ -48,6 +70,10 @@ echo "export https_proxy=https://代理ip:端口/" >> ~/.bashrc
 source ~/.bashrc
 
 #================================================Ubuntu初始化=================================================
+#切换到root用户
+sudo su #回车后输入普通用户密码
+cd && pwd
+
 # 网络配置
 sudo tee /etc/netplan/01-netcfg.yaml <<'EOF'
 network:
@@ -69,6 +95,12 @@ ip a | grep 192
 ip route
 ping -c 4 baidu.com 
 
+#root默认没密码，设置root密码
+echo 'root:passwd' | sudo chpasswd
+#允许root登录ssh 
+sudo sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
+systemctl restart ssh
+
 #配置软件仓库
 bash <(curl -sSL https://gitee.com/SuperManito/LinuxMirrors/raw/main/ChangeMirrors.sh)
 #安装基础组件
@@ -84,8 +116,7 @@ sudo ufw disable
 sudo swapoff -a
 sudo sed -i '/swap/s/^/#/' /etc/fstab  # 永久禁用
 
-# ========== 环境配置 ========== 
-# 配置Vim避免自动注释
+# 配置 Vim 避免自动注释
 echo "set paste" | sudo tee -a ~/.vimrc
 
 # 禁用AppArmor
