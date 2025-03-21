@@ -30,7 +30,7 @@ more /etc/resolv.conf
 route -n
 ping -c 4 www.baidu.com
 #安装组件
-yum install -y wget yum-utils net-tools bridge-utils telnet vim jq iftop screen lrzsz lsof rsync bind-utils chrony ipset ipvsadm dos2unix iptables-services
+yum install -y wget yum-utils net-tools bridge-utils telnet vim jq iftop screen lrzsz lsof rsync bind-utils chrony ipset ipvsadm dos2unix iptables-services tree sl
 systemctl disable iptables && systemctl stop iptables
 # 取消vim自动添加注释
 touch ~/.vimrc
@@ -107,7 +107,7 @@ bash <(curl -sSL https://gitee.com/SuperManito/LinuxMirrors/raw/main/ChangeMirro
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y wget curl net-tools chrony telnet lrzsz lsof \
 screen bridge-utils iftop jq rsync dnsutils ipset ipvsadm dos2unix \
-nfs-common nfs-kernel-server bash-completion
+nfs-common nfs-kernel-server bash-completion tree sl
 
 # 禁用防火墙
 sudo ufw disable
