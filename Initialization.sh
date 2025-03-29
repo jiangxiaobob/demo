@@ -130,7 +130,13 @@ sudo timedatectl set-timezone Asia/Shanghai
 #时间同步状态
 chronyc tracking
 # 强制24小时制时间格式，执行后重启或登录新窗口再验证
-echo 'LC_TIME=en_DK.UTF-8' | sudo tee -a /etc/environment
+#echo 'LC_TIME=en_DK.UTF-8' | sudo tee -a /etc/environment
+#date
+# 显示中文
+apt install language-pack-zh-hans
+locale -a|grep zh_CN.utf8
+echo -e "export LANG=zh_CN.utf8\nexport LC_TIME=zh_CN.utf8" >> /root/.bashrc
+source /root/.bashrc
 date
 
 # 启用bash自动补全
