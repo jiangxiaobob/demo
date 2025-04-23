@@ -11,7 +11,8 @@ tee /etc/docker/daemon.json <<-'EOF'
 {
   "registry-mirrors": [
     "https://docker.lms.run",
-    "https://1mvmtgbg.mirror.aliyuncs.com"
+    "https://1mvmtgbg.mirror.aliyuncs.com",
+    "https://docker.btsb.one"
   ]
 }
 EOF
