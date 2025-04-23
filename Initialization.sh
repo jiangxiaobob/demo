@@ -32,9 +32,18 @@ ping -c 4 www.baidu.com
 #安装组件
 yum install -y wget yum-utils net-tools bridge-utils telnet vim jq iftop screen lrzsz lsof rsync bind-utils chrony ipset ipvsadm dos2unix iptables-services tree sl
 systemctl disable iptables && systemctl stop iptables
-# 取消vim自动添加注释
+# 配置vim
 touch ~/.vimrc
-echo "set paste"|sudo tee ~/.vimrc
+tee ~/.vimrc <<'EOF'
+set paste
+set number
+set tabstop=4
+set showmatch
+set hlsearch 
+set autoindent
+set cindent
+EOF
+
 # 关闭交换分区
 swapoff -a
 sed -i 's/.*swap.*/# remove swap/' /etc/fstab
@@ -116,8 +125,16 @@ sudo ufw disable
 sudo swapoff -a
 sudo sed -i '/swap/s/^/#/' /etc/fstab  # 永久禁用
 
-# 配置 Vim 避免自动注释
-echo "set paste" | sudo tee -a ~/.vimrc
+# 配置 Vim
+tee /root/.vimrc <<'EOF'
+set paste
+set number
+set tabstop=4
+set showmatch
+set hlsearch 
+set autoindent
+set cindent
+EOF
 
 # 禁用AppArmor
 sudo systemctl stop apparmor
