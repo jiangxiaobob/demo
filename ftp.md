@@ -43,6 +43,7 @@ sudo cp /etc/vsftpd/vsftpd.conf /etc/vsftpd/vsftpd.conf.bak
 grep -Ev '^(#|$)' /etc/vsftpd.conf 其中包含以下内容(没就取消注释补上)
 local_enable=YES # 启用本地用户
 write_enable=YES # 允许写（上传、删除等）
+local_umask=011 # 控制用户上传文件和目录时的默认权限掩码,011=文件655 目录766；022=文件644，目录755 (x=1 w=2 r=4)
 chroot_local_user=NO # 把用户限制在其 home 目录
 # 启用 chroot 白名单（当 chroot_local_user=NO 时,去读取chroot_list_file里的进行chroot）
 chroot_list_enable=YES
